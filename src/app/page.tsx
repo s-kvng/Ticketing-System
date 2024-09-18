@@ -10,6 +10,20 @@ export default function Home() {
     supabase.storage
       .listBuckets()
       .then((result) => console.log("Buckets list ", result));
+
+    // Example usage of router handler
+    const getRequest = async () => {
+      // one method for fetching a bucket using the serverless API
+      // await fetch("http://localhost:3000/api/demo").then((response) => {
+      //   console.log(response.json());
+      // });
+
+      // second method for fetching a bucket using the serverless API
+      const response = await fetch("http://localhost:3000/api/demo");
+      const data = await response.json();
+      console.log("Data: ", data.message);
+    };
+    getRequest();
   }, []);
 
   return (

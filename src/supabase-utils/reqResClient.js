@@ -25,18 +25,18 @@ export const getSupabaseReqResClient = ({ request }) => {
           cookiesToSet.forEach(({ name, value, options }) => {
             request.cookies.set(name, value);
           });
+
+          //   Passing the new request cookies to the response object
+          response.value = NextResponse.next({ request });
+
+          //   setting the cookies to the response object
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.value.cookies.set(name, value, options);
+          });
         },
       },
     }
   );
-
-  //   Passing the new cookies to the response object
-  response.value = NextResponse.next({ request });
-
-  //   setting the cookies to the response object
-  cookiesToSet.forEach(({ name, value, options }) => {
-    response.value.cookies.set(name, value, options);
-  });
 
   return { supabase, response };
 };
