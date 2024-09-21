@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Providers from "./providers";
 import "./globals.css";
 
 <head>
@@ -35,7 +36,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main className=" container"> {children}</main>
+        <Providers>
+          <main className=" container h-screen mx-auto"> {children}</main>
+        </Providers>
       </body>
     </html>
   );
