@@ -14,6 +14,7 @@ import {
 import { EyeIcon } from "../icons/EyeIcon";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { EditIcon } from "../icons/EditIcon";
+import Link from "next/link";
 
 const columns = [
   { name: "ID", uid: "id" },
@@ -47,7 +48,7 @@ export default function TicketList({ dummyTickets }) {
       case "status":
         return (
           <Chip
-            className="capitalize text-black"
+            className="capitalize text-white"
             color={statusColorMap[ticket.status]}
             size="sm"
             variant="flat"
@@ -58,12 +59,14 @@ export default function TicketList({ dummyTickets }) {
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
+            <Tooltip color="primary" content="Details">
+              <Link href={`tickets/details/${ticket?.id}`}>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Link>
             </Tooltip>
-            <Tooltip content="Edit ticket">
+            <Tooltip color="secondary" content="Edit ticket">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                 <EditIcon />
               </span>
