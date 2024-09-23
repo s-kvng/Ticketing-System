@@ -55,9 +55,16 @@ export default function App() {
           <NavbarItem
             key={`${item.label}-${index}`}
             isActive={path === item.href}
+            className={`border border-gray-400 p-2 rounded-md ${
+              path === item.href
+                ? "bg-white"
+                : "bg-transparent hover:bg-gray-400"
+            }`}
           >
             <Link
-              color={path === item.href ? "primary" : "foreground"}
+              className={`${
+                path === item.href ? "text-black" : "text-slate-700 "
+              }`}
               href={item.href}
             >
               {item.label}
