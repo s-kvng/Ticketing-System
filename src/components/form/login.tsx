@@ -2,10 +2,16 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 
 const Login = ({ isPasswordLogin }) => {
+  const router = useRouter();
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
+
+  const supabase = getSupabaseBrowserClient();
 
   return (
     <form
@@ -14,6 +20,18 @@ const Login = ({ isPasswordLogin }) => {
         event.preventDefault();
         if (isPasswordLogin) {
           alert("User wants to login with password");
+          supabase.auth
+            .signInWithPassword({
+              email: emailInputRef.current.value,
+              password: passwordInputRef.current.value,
+            })
+            .then((result) => {
+              if (result.data?.user) {
+                router.push("/tickets");
+              } else {
+                alert("Failed to Sign In");
+              }
+            });
         } else {
           alert("User wants to login with magic link");
         }
@@ -30,7 +48,7 @@ const Login = ({ isPasswordLogin }) => {
             <input
               ref={emailInputRef}
               className="block w-full bg-slate-950/60 text-white 
-              border border-1 border-gray-500 rounded-sm p-3 mb-3 font-light "
+              border  border-gray-500 rounded-sm p-3 mb-3 font-light "
               type="email"
               id="email"
               name="email"
@@ -42,7 +60,7 @@ const Login = ({ isPasswordLogin }) => {
               Password
               <input
                 ref={passwordInputRef}
-                className="block w-full bg-slate-950/60 text-white border border-1 border-gray-500 rounded-sm p-3 font-light"
+                className="block w-full bg-slate-950/60 text-white border  border-gray-500 rounded-sm p-3 font-light"
                 type="password"
                 id="password"
                 name="password"
