@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -13,13 +13,30 @@ const Login = ({ isPasswordLogin }) => {
 
   const supabase = getSupabaseBrowserClient();
 
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN") {
+        router.push("/tickets");
+      }
+    });
+
+    // end subscription event
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   return (
     <form
       method="POST"
-      action="/auth/pw-login"
+      action={isPasswordLogin ? "/auth/pw-login" : "/auth/magic-link"}
       className="py-5"
       onSubmit={(event) => {
-        event.preventDefault();
+        {
+          isPasswordLogin && event.preventDefault();
+        }
         if (isPasswordLogin) {
           alert("User wants to login with password");
           supabase.auth
@@ -28,9 +45,7 @@ const Login = ({ isPasswordLogin }) => {
               password: passwordInputRef.current.value,
             })
             .then((result) => {
-              if (result.data?.user) {
-                router.push("/tickets");
-              } else {
+              if (!result.data?.user) {
                 alert("Failed to Sign In");
               }
             });
