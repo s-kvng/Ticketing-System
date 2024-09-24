@@ -15,6 +15,8 @@ const Login = ({ isPasswordLogin }) => {
 
   return (
     <form
+      method="POST"
+      action="/auth/pw-login"
       className="py-5"
       onSubmit={(event) => {
         event.preventDefault();
