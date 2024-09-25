@@ -1,19 +1,55 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 
 const Login = ({ isPasswordLogin }) => {
+  const router = useRouter();
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
 
+  const supabase = getSupabaseBrowserClient();
+
+  useEffect(() => {
+    // listen for sign in events from the server(supabase)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN") {
+        router.push("/tickets");
+      }
+    });
+
+    // end subscription event
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   return (
     <form
+      method="POST"
+      action={isPasswordLogin ? "/auth/pw-login" : "/auth/magic-link"}
       className="py-5"
       onSubmit={(event) => {
-        event.preventDefault();
+        {
+          isPasswordLogin && event.preventDefault();
+        }
         if (isPasswordLogin) {
           alert("User wants to login with password");
+          supabase.auth
+            .signInWithPassword({
+              email: emailInputRef.current.value,
+              password: passwordInputRef.current.value,
+            })
+            .then((result) => {
+              if (!result.data?.user) {
+                alert("Failed to Sign In");
+              }
+            });
         } else {
           alert("User wants to login with magic link");
         }
@@ -30,7 +66,7 @@ const Login = ({ isPasswordLogin }) => {
             <input
               ref={emailInputRef}
               className="block w-full bg-slate-950/60 text-white 
-              border border-1 border-gray-500 rounded-sm p-3 mb-3 font-light "
+              border  border-gray-500 rounded-sm p-3 mb-3 font-light "
               type="email"
               id="email"
               name="email"
@@ -42,7 +78,7 @@ const Login = ({ isPasswordLogin }) => {
               Password
               <input
                 ref={passwordInputRef}
-                className="block w-full bg-slate-950/60 text-white border border-1 border-gray-500 rounded-sm p-3 font-light"
+                className="block w-full bg-slate-950/60 text-white border  border-gray-500 rounded-sm p-3 font-light"
                 type="password"
                 id="password"
                 name="password"
@@ -57,7 +93,7 @@ const Login = ({ isPasswordLogin }) => {
           {isPasswordLogin ? (
             <Link
               href={{
-                pathname: "/login",
+                pathname: "/",
                 query: { magicLink: "yes" },
               }}
             >
@@ -66,7 +102,7 @@ const Login = ({ isPasswordLogin }) => {
           ) : (
             <Link
               href={{
-                pathname: "/login",
+                pathname: "/",
                 query: { magicLink: "no" },
               }}
             >

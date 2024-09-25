@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -12,12 +12,32 @@ import {
   Link,
   Button,
 } from "@nextui-org/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 // import {AcmeLogo} from "./AcmeLogo.jsx";
 
 export default function App() {
+  const router = useRouter();
   const path = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const supabase = getSupabaseBrowserClient();
+
+  //
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        router.push("/");
+      }
+    });
+
+    // end subscription event
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const menuItems = [
     {
@@ -74,7 +94,16 @@ export default function App() {
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
-          <Button as={Link} color="danger" href="#" variant="flat">
+          <Button
+            as={Link}
+            color="danger"
+            href="/logout"
+            variant="flat"
+            onClick={(event) => {
+              event.preventDefault();
+              supabase.auth.signOut();
+            }}
+          >
             Logout
           </Button>
         </NavbarItem>
