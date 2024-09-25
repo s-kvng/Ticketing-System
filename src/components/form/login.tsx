@@ -14,6 +14,7 @@ const Login = ({ isPasswordLogin }) => {
   const supabase = getSupabaseBrowserClient();
 
   useEffect(() => {
+    // listen for sign in events from the server(supabase)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -92,7 +93,7 @@ const Login = ({ isPasswordLogin }) => {
           {isPasswordLogin ? (
             <Link
               href={{
-                pathname: "/login",
+                pathname: "/",
                 query: { magicLink: "yes" },
               }}
             >
@@ -101,7 +102,7 @@ const Login = ({ isPasswordLogin }) => {
           ) : (
             <Link
               href={{
-                pathname: "/login",
+                pathname: "/",
                 query: { magicLink: "no" },
               }}
             >
