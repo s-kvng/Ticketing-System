@@ -5,13 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+import { FORM_TYPES } from "@/contants/formTypes";
 
-const Login = ({ isPasswordLogin }) => {
+const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
   const router = useRouter();
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
 
   const supabase = getSupabaseBrowserClient();
+
+  // checks to change state of form
+  isPasswordLogin = formType === FORM_TYPES.PASSWORD_LOGIN;
+  const isPasswordRecovery = formType === FORM_TYPES.PASSWORD_RECOVERY;
+  const isMagicLinkLogin = formType === FORM_TYPES.MAGIC_LINK;
 
   useEffect(() => {
     // listen for sign in events from the server(supabase)
@@ -59,8 +65,17 @@ const Login = ({ isPasswordLogin }) => {
         className="bg-gray-900/80 rounded-md"
         style={{ maxWidth: "420px", margin: "auto" }}
       >
-        <header className=" bg-gray-700/20 p-5 font-bold">Login</header>
+        <header className=" bg-gray-700/20 p-5 font-bold">
+          {isPasswordLogin
+            ? "Login"
+            : isMagicLinkLogin
+            ? "Magic Link Login"
+            : "Password Recovery"}
+        </header>
         <fieldset className=" py-7 px-5">
+          {isPasswordRecovery && (
+            <input type="hidden" name="type" value="recovery" />
+          )}
           <label htmlFor="email" className="font-semibold">
             Email
             <input
@@ -89,27 +104,41 @@ const Login = ({ isPasswordLogin }) => {
         </fieldset>
 
         {/* link */}
-        <p className="px-5 text-blue-600">
-          {isPasswordLogin ? (
-            <Link
-              href={{
-                pathname: "/",
-                query: { magicLink: "yes" },
-              }}
-            >
-              Go to Magic Link Login
-            </Link>
-          ) : (
-            <Link
-              href={{
-                pathname: "/",
-                query: { magicLink: "no" },
-              }}
-            >
-              Go to Password Login
-            </Link>
-          )}
-        </p>
+        <div className=" flex justify-between items-center">
+          <p className="px-5 text-blue-600">
+            {isPasswordLogin ? (
+              <Link
+                href={{
+                  pathname: "/",
+                  query: { magicLink: "yes" },
+                }}
+              >
+                Go to Magic Link Login
+              </Link>
+            ) : (
+              <Link
+                href={{
+                  pathname: "/",
+                  query: { magicLink: "no" },
+                }}
+              >
+                Go to Password Login
+              </Link>
+            )}
+          </p>
+          <p className="px-5 text-blue-600">
+            {!isPasswordRecovery && (
+              <Link
+                href={{
+                  pathname: "/",
+                  query: { recovery: "yes" },
+                }}
+              >
+                Forgot Password
+              </Link>
+            )}
+          </p>
+        </div>
 
         {/* button */}
         <div className="px-5 pt-2">
@@ -118,8 +147,12 @@ const Login = ({ isPasswordLogin }) => {
             rounded-sm hover:bg-sky-400 shadow-md"
             type="submit"
           >
-            Sign in with
-            {isPasswordLogin ? " Password" : " Magic Link"}
+            {(isPasswordLogin || isMagicLinkLogin) && "Sign in with"}
+            {isPasswordLogin
+              ? " Password"
+              : isMagicLinkLogin
+              ? " Magic Link"
+              : " Recover Password"}
           </button>
         </div>
       </article>

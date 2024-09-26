@@ -4,7 +4,7 @@ import Link from "next/link";
 const ErrorPage = ({ searchParams }) => {
   const { type } = searchParams;
   console.log(type);
-  const knownErrors = ["login-failed", "magiclink"];
+  const knownErrors = ["login-failed", "magiclink", "invalid_magiclink"];
   return (
     <div className="text-center pt-10">
       <h2>Ooops!!! 🤭</h2>
@@ -16,6 +16,13 @@ const ErrorPage = ({ searchParams }) => {
         <p>
           We couldn't find your account to send the magic link. Please check
           your email and try again.
+        </p>
+      )}
+
+      {type === "invalid_magiclink" && (
+        <p>
+          Something went wrong verifying the OTP token, it seems to be invalid.
+          Try resending another magic link. 😃
         </p>
       )}
       <p>If you continue to experience issues, please contact support.</p>
