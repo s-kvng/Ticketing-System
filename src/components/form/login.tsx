@@ -8,7 +8,7 @@ import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { FORM_TYPES } from "@/contants/formTypes";
 import { urlPath } from "@/utils/url-helpers";
 
-const Login = ({ tenant, formType = "pw-login" }) => {
+const Login = ({ tenantName, tenant, formType = "pw-login" }) => {
   const router = useRouter();
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
@@ -76,7 +76,10 @@ const Login = ({ tenant, formType = "pw-login" }) => {
             : isMagicLinkLogin
             ? "Magic Link Login"
             : "Password Recovery"}
+
+          <p className=" text-sm text-gray-600 ">{tenantName}</p>
         </header>
+
         <fieldset className=" py-7 px-5">
           {isPasswordRecovery && (
             <input type="hidden" name="type" value="recovery" />

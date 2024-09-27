@@ -1,8 +1,29 @@
 import Login from "@/components/form/login";
 import { FORM_TYPES } from "@/contants/formTypes";
+import { getSupabaseAdminClient } from "@/supabase-utils/adminClient";
+import { notFound } from "next/navigation";
 
-const LoginPage = ({ searchParams, params }) => {
+const LoginPage = async ({ searchParams, params }) => {
   const { tenant } = params;
+
+  // instantiate the admin supabase client
+  const supabaseAdmin = getSupabaseAdminClient();
+
+  // check the tenant table to check the tenant provided in the url is a valid tenant in the database
+  // the single forces supabase to return at least one value or if no match is found return an error
+  const { data, error } = await supabaseAdmin
+    .from("tenants")
+    .select("*")
+    .eq("id", tenant)
+    .single();
+
+  console.log("Data->", data);
+  const { name: tenantName } = data;
+
+  if (error) {
+    notFound();
+  }
+
   let formType: string;
   const wantMagicLink = searchParams.magicLink === "yes";
   const wantPasswordRecovery = searchParams.recovery === "yes";
@@ -15,7 +36,7 @@ const LoginPage = ({ searchParams, params }) => {
     formType = FORM_TYPES.PASSWORD_LOGIN;
   }
 
-  return <Login tenant={tenant} formType={formType} />;
+  return <Login tenantName={tenantName} tenant={tenant} formType={formType} />;
 };
 
 export default LoginPage;
