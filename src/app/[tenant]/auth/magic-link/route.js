@@ -2,9 +2,12 @@ import { getSupabaseAdminClient } from "@/supabase-utils/adminClient";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
+import { builderUrl } from "@/utils/url-helpers";
+
 // Route Handler to handle signing in users with a magic link
 
-export async function POST(request) {
+export async function POST(request, { params }) {
+  const { tenant } = params;
   // getting the data from the form
   const formData = await request.formData();
   const email = formData.get("email");
@@ -22,9 +25,12 @@ export async function POST(request) {
   );
 
   if (error) {
-    return NextResponse.redirect(new URL(`/error?type=${type}`, request.url), {
-      status: 302,
-    });
+    return NextResponse.redirect(
+      builderUrl(`/error?type=${type}`, tenant, request),
+      {
+        status: 302,
+      }
+    );
   }
 
   // A workaround to prevent generateLink() from creating new user when email is not available
@@ -50,9 +56,10 @@ export async function POST(request) {
   const { hashed_token } = linkData.properties;
 
   // construct a custom link with the hashed_token
-  const constructedLink = new URL(
+  const constructedLink = builderUrl(
     `/auth/verify?hashed_token=${hashed_token}&type=${type}`,
-    request.url
+    tenant,
+    request
   );
 
   // initialize the mailing transport
@@ -83,6 +90,6 @@ export async function POST(request) {
   // send the email
   await transporter.sendMail(message);
 
-  const thanksUrl = new URL(`/magic-thanks?type=${type}`, request.url);
+  const thanksUrl = builderUrl(`/magic-thanks?type=${type}`, tenant, request);
   return NextResponse.redirect(thanksUrl, { status: 302 });
 }

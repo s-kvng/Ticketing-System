@@ -1,7 +1,9 @@
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilsClient";
-import { verify } from "crypto";
+import { builderUrl } from "@/utils/url-helpers";
+
 import { NextResponse } from "next/server";
-export async function GET(request) {
+export async function GET(request, { params }) {
+  const { tenant } = params;
   // we extract the query parameters by accessing searchParams
   // because we parse it automatically by using the web API standard( new URL)
   // we are able to use the get method on it
@@ -26,15 +28,15 @@ export async function GET(request) {
   // check if session was established successfully or not
   if (error) {
     return NextResponse.redirect(
-      new URL("/error?type=invalid_magiclink", request.url)
+      builderUrl("/error?type=invalid_magiclink", tenant, request)
     );
   }
 
   if (isRecovery) {
     return NextResponse.redirect(
-      new URL(`/tickets/change-password`, request.url)
+      builderUrl(`/tickets/change-password`, tenant, request)
     );
   } else {
-    return NextResponse.redirect(new URL("/tickets", request.url));
+    return NextResponse.redirect(builderUrl("/tickets", tenant, request));
   }
 }

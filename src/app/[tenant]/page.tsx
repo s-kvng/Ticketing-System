@@ -1,7 +1,8 @@
 import Login from "@/components/form/login";
 import { FORM_TYPES } from "@/contants/formTypes";
 
-const LoginPage = ({ searchParams }) => {
+const LoginPage = ({ searchParams, params }) => {
+  const { tenant } = params;
   let formType: string;
   const wantMagicLink = searchParams.magicLink === "yes";
   const wantPasswordRecovery = searchParams.recovery === "yes";
@@ -14,7 +15,7 @@ const LoginPage = ({ searchParams }) => {
     formType = FORM_TYPES.PASSWORD_LOGIN;
   }
 
-  return <Login isPasswordLogin={!wantMagicLink} formType={formType} />;
+  return <Login tenant={tenant} formType={formType} />;
 };
 
 export default LoginPage;

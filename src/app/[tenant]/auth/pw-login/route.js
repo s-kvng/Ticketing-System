@@ -1,7 +1,10 @@
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilsClient";
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
+import { builderUrl } from "@/utils/url-helpers";
+
+export async function POST(request, { params }) {
+  const { tenant } = params;
   // getting the data from the form
   const formData = await request.formData();
   const email = formData.get("email");
@@ -21,13 +24,13 @@ export async function POST(request) {
   console.log(" inside login server-> ", userData);
   if (error || !userData) {
     return NextResponse.redirect(
-      new URL("/error?type=login-failed", request.url),
+      builderUrl("/error?type=login-failed", tenant, request),
       { status: 302 }
     );
   }
 
   //   construct a new url from the previous requested url and redirect to that url
-  return NextResponse.redirect(new URL("/tickets", request.url), {
+  return NextResponse.redirect(builderUrl("/tickets", tenant, request), {
     status: 302,
   });
 }

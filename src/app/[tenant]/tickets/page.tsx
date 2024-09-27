@@ -21,11 +21,12 @@ const dummyTickets = [
   },
 ];
 
-const TicketListPage = () => {
+const TicketListPage = ({ params }) => {
+  const { tenant } = params;
   return (
     <>
       <h2 className=" mt-10 mb-5">Ticket Lists</h2>
-      <TicketList dummyTickets={dummyTickets} />
+      <TicketList dummyTickets={dummyTickets} tenant={tenant} />
     </>
   );
 };
