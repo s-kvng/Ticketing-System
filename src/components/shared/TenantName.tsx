@@ -1,6 +1,23 @@
-import React from "react";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilsClient";
 
-const TenantName = ({ tenantName }) => {
+const TenantName = async ({ tenant }) => {
+  // TODO: Implement logic to fetch and display tenant name based on provided tenant ID
+  let tenantName = "Unknown";
+
+  // instaniating a supabase client
+  const supabase = getSupabaseCookiesUtilClient();
+
+  // Fetch tenant name from your backend API or database using the provided tenant ID
+  const selection = await supabase
+    .from("tenants")
+    .select("name")
+    .eq("id", tenant)
+    .single();
+
+  const { data, error } = selection;
+  console.log({ tenant, data, error });
+  tenantName = data?.name ?? tenantName;
+
   return (
     <header style={{ marginBottom: "10px" }}>
       <div

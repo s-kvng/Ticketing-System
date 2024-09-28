@@ -17,12 +17,13 @@ const LoginPage = async ({ searchParams, params }) => {
     .eq("id", tenant)
     .single();
 
-  console.log("Data->", data);
-  const { name: tenantName } = data;
-
+  // check for an error
   if (error) {
     notFound();
   }
+
+  console.log("Data->", data);
+  const { name: tenantName } = data;
 
   let formType: string;
   const wantMagicLink = searchParams.magicLink === "yes";

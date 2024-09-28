@@ -6,7 +6,7 @@ const TicketsLayout = ({ children, params }) => {
   return (
     <>
       <section>
-        <TenantName tenantName={tenant} />
+        <TenantName tenant={tenant} />
         <Nav tenant={tenant} />
       </section>
       <section>{children}</section>

@@ -26,7 +26,7 @@ const Login = ({ tenantName, tenant, formType = "pw-login" }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
-        router.push("/tickets");
+        router.push(`${tenant}/tickets`);
       }
     });
 
