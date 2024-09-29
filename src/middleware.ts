@@ -36,6 +36,8 @@ export async function middleware(req){
     if(applicationPath.startsWith("/tickets")){
         if(!sessionUser){
             return NextResponse.redirect(new URL(`/${tenant}`, req.url))
+        }else if(!sessionUser.app_metadata?.tenants.includes(tenant)){
+            return NextResponse.rewrite(new URL(`${tenant}/not-found`, req.url))
         }
     }else if(applicationPath === "/"){
         if(sessionUser){
