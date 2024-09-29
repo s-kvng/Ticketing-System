@@ -24,7 +24,10 @@ export async function POST(request, { params }) {
     }
   );
 
-  if (error) {
+  // get user data
+  const user = linkData.user;
+
+  if (error || !user.app_metadata?.tenants.includes(tenant)) {
     return NextResponse.redirect(
       builderUrl(`/error?type=${type}`, tenant, request),
       {
