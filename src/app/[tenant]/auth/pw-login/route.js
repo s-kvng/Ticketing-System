@@ -22,7 +22,7 @@ export async function POST(request, { params }) {
   //   get user information
   const userData = data?.user;
   console.log(" inside login server-> ", userData);
-  if (error || !userData) {
+  if (error || !userData || !userData.app_metadata?.tenants.includes(tenant)) {
     return NextResponse.redirect(
       builderUrl("/error?type=login-failed", tenant, request),
       { status: 302 }

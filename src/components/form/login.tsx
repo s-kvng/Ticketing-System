@@ -26,7 +26,12 @@ const Login = ({ tenantName, tenant, formType = "pw-login" }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
-        router.push(`${tenant}/tickets`);
+        if (session.user.app_metadata.tenants?.includes(tenant)) {
+          router.push(`${tenant}/tickets`);
+        } else {
+          supabase.auth.signOut();
+          alert("You are not authorized to access this tenant");
+        }
       }
     });
 
