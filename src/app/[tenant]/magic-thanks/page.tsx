@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { Button } from "@nextui-org/react";
-import { FORM_TYPES } from "@/contants/formTypes";
 
-const MagicLinkSuccessPage = ({ searchParams }) => {
+import { FORM_TYPES } from "@/contants/formTypes";
+import { urlPath } from "@/utils/url-helpers";
+
+const MagicLinkSuccessPage = ({ searchParams, params }) => {
   const { type } = searchParams;
+  const { tenant } = params;
   const isPasswordRecovery = type === FORM_TYPES.PASSWORD_RECOVERY;
 
   return (
@@ -17,7 +20,12 @@ const MagicLinkSuccessPage = ({ searchParams }) => {
           ? "Thanks! You should get a link to reset password in a few seconds"
           : "Thanks! You should get a link to login in a few seconds"}
       </p>
-      <Button color="secondary" as={Link} href="/" className=" mt-5">
+      <Button
+        color="secondary"
+        as={Link}
+        href={urlPath("/", tenant)}
+        className=" mt-5"
+      >
         Go back
       </Button>
     </div>

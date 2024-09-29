@@ -17,17 +17,31 @@ export async function middleware(req){
     // get the user from the session returned
     const sessionUser = session.data?.session?.user;
 
+    // 
+    const [ tenant , ...restOfPath] = requestedPath.substr(1).split("/")
+    // check if the tenant value are characters that can be a tenant ID
+    console.log(!/^[a-z0-9-_]+$/.test(tenant))
+    if(!/^[a-z0-9-_]+$/.test(tenant)){
+        console.log("Invalid")
+        return NextResponse.rewrite(new URL(`${tenant}/not-found`, req.url))
+       
+    }
+    const applicationPath = "/" + restOfPath.join("/")
+    console.log(applicationPath)
+
     // check if the user is trying to access a protected route 
     // if the user is not authenticated then redirect them to the login page
     // else allow them to access the protected route
     // this middleware should be placed at the top of your middleware stack
-    if(requestedPath.startsWith("/tickets")){
+    if(applicationPath.startsWith("/tickets")){
         if(!sessionUser){
-            return NextResponse.redirect(new URL("/", req.url))
+            return NextResponse.redirect(new URL(`/${tenant}`, req.url))
+        }else if(!sessionUser.app_metadata?.tenants.includes(tenant)){
+            return NextResponse.rewrite(new URL(`${tenant}/not-found`, req.url))
         }
-    }else if(requestedPath === "/"){
+    }else if(applicationPath === "/"){
         if(sessionUser){
-            return NextResponse.redirect(new URL("/tickets", req.url))
+            return NextResponse.redirect(new URL(`${tenant}/tickets`, req.url))
         }
     }
 

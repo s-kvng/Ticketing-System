@@ -1,8 +1,11 @@
 import { Button } from "@nextui-org/react";
 import Link from "next/link";
 
-const ErrorPage = ({ searchParams }) => {
+import { urlPath } from "@/utils/url-helpers";
+
+const ErrorPage = ({ searchParams, params }) => {
   const { type } = searchParams;
+  const { tenant } = params;
   console.log(type);
   const knownErrors = ["login-failed", "magiclink", "invalid_magiclink"];
   return (
@@ -27,7 +30,7 @@ const ErrorPage = ({ searchParams }) => {
       )}
       <p>If you continue to experience issues, please contact support.</p>
 
-      <Button color="secondary" as={Link} href="/">
+      <Button color="secondary" as={Link} href={`/${tenant}`}>
         Back to login
       </Button>
     </div>

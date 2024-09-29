@@ -15,9 +15,10 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+import { urlPath } from "@/utils/url-helpers";
 // import {AcmeLogo} from "./AcmeLogo.jsx";
 
-export default function App() {
+export default function App({ tenant }) {
   const router = useRouter();
   const path = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,7 +30,7 @@ export default function App() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
-        router.push("/");
+        router.push(`/${tenant}`);
       }
     });
 
@@ -42,15 +43,15 @@ export default function App() {
   const menuItems = [
     {
       label: "Ticket List",
-      href: "/tickets",
+      href: urlPath("/tickets", tenant),
     },
     {
       label: "Create New Ticket",
-      href: "/tickets/new",
+      href: urlPath("/tickets/new", tenant),
     },
     {
       label: "User List",
-      href: "/tickets/users",
+      href: urlPath("/tickets/users", tenant),
     },
   ];
 

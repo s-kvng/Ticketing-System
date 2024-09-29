@@ -1,12 +1,13 @@
 import TenantName from "@/components/shared/TenantName";
 import Nav from "@/components/shared/Nav";
 
-const TicketsLayout = ({ children }) => {
+const TicketsLayout = ({ children, params }) => {
+  const { tenant } = params;
   return (
     <>
       <section>
-        <TenantName tenantName={"Packt"} />
-        <Nav />
+        <TenantName tenant={tenant} />
+        <Nav tenant={tenant} />
       </section>
       <section>{children}</section>
     </>

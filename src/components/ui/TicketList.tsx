@@ -15,6 +15,7 @@ import { EyeIcon } from "../icons/EyeIcon";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { EditIcon } from "../icons/EditIcon";
 import Link from "next/link";
+import { urlPath } from "@/utils/url-helpers";
 
 const columns = [
   { name: "ID", uid: "id" },
@@ -29,7 +30,7 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-export default function TicketList({ dummyTickets }) {
+export default function TicketList({ dummyTickets, tenant }) {
   const renderCell = React.useCallback((ticket, columnKey) => {
     const cellValue = ticket[columnKey];
 
@@ -60,7 +61,7 @@ export default function TicketList({ dummyTickets }) {
         return (
           <div className="relative flex items-center gap-2">
             <Tooltip color="primary" content="Details">
-              <Link href={`tickets/details/${ticket?.id}`}>
+              <Link href={urlPath(`/tickets/details/${ticket?.id}`, tenant)}>
                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                   <EyeIcon />
                 </span>

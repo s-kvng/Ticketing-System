@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { FORM_TYPES } from "@/contants/formTypes";
+import { urlPath } from "@/utils/url-helpers";
 
-const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
+const Login = ({ tenantName, tenant, formType = "pw-login" }) => {
   const router = useRouter();
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
@@ -15,7 +16,7 @@ const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
   const supabase = getSupabaseBrowserClient();
 
   // checks to change state of form
-  isPasswordLogin = formType === FORM_TYPES.PASSWORD_LOGIN;
+  const isPasswordLogin = formType === FORM_TYPES.PASSWORD_LOGIN;
   const isPasswordRecovery = formType === FORM_TYPES.PASSWORD_RECOVERY;
   const isMagicLinkLogin = formType === FORM_TYPES.MAGIC_LINK;
 
@@ -25,7 +26,12 @@ const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
-        router.push("/tickets");
+        if (session.user.app_metadata.tenants?.includes(tenant)) {
+          router.push(`${tenant}/tickets`);
+        } else {
+          supabase.auth.signOut();
+          alert("You are not authorized to access this tenant");
+        }
       }
     });
 
@@ -38,7 +44,11 @@ const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
   return (
     <form
       method="POST"
-      action={isPasswordLogin ? "/auth/pw-login" : "/auth/magic-link"}
+      action={
+        isPasswordLogin
+          ? urlPath("/auth/pw-login", tenant)
+          : urlPath("/auth/magic-link", tenant)
+      }
       className="py-5"
       onSubmit={(event) => {
         {
@@ -71,7 +81,10 @@ const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
             : isMagicLinkLogin
             ? "Magic Link Login"
             : "Password Recovery"}
+
+          <p className=" text-sm text-gray-600 ">{tenantName}</p>
         </header>
+
         <fieldset className=" py-7 px-5">
           {isPasswordRecovery && (
             <input type="hidden" name="type" value="recovery" />
@@ -109,7 +122,7 @@ const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
             {isPasswordLogin ? (
               <Link
                 href={{
-                  pathname: "/",
+                  pathname: `/${tenant}`,
                   query: { magicLink: "yes" },
                 }}
               >
@@ -118,7 +131,7 @@ const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
             ) : (
               <Link
                 href={{
-                  pathname: "/",
+                  pathname: `/${tenant}`,
                   query: { magicLink: "no" },
                 }}
               >
@@ -130,7 +143,7 @@ const Login = ({ isPasswordLogin, formType = "pw-login" }) => {
             {!isPasswordRecovery && (
               <Link
                 href={{
-                  pathname: "/",
+                  pathname: `/${tenant}`,
                   query: { recovery: "yes" },
                 }}
               >
